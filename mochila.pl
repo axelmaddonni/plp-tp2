@@ -49,7 +49,7 @@ confAMochila(binaria(X,Y), M) :- herramienta(X,_), herramienta(Y,_), esPermutaci
 confAMochila(jerarquica(X,Y), M) :- confAMochila(X, M1), confAMochila(Y,M2), append(M1, M2, Maux), esPermutacion(Maux, M).
 
 % EJ6. Comprar
-generateLista([X],1) :- herramienta(X,_).
-generateLista([X|Xs],I) :- herramienta(X,_), I > 1, J is I-1, generateLista(Xs,J).
-
-comprar(P,C,M) :- between(1,C,I), generateLista(M,I), configuracion(M,Conf,Potencial,_), Potencial >= P.
+generateLista([X],1) :- herramienta(X,P).
+generateLista([X|Xs],I) :- herramienta(X,P), I > 1, J is I-1, generateLista(Xs,J).
+mejorConfiguracion(M,P) :- configuracion(M,Conf2,P,_), forall(configuracion(M,Conf1,Paux,_), Paux =< P),!.
+comprar(P,C,M) :- between(1,C,I), generateLista(M,I), mejorConfiguracion(M, Potencial), Potencial >= P.
