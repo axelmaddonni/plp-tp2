@@ -1,16 +1,17 @@
+%Ej1 Composicion
+
 herramienta(rayo, 10).
 herramienta(volatilizador, 40).
 herramienta(encendedor, 5).
 
-composicion(binaria(X,Y),P,5):- herramienta(X, PX), herramienta(Y,PY), X\= encendedor, P is 2*PX + PY.
-
 %% composicion(+Composicion, ?Potencial, ?Costo)
-
+composicion(binaria(X,Y),P,5):- herramienta(X, PX), herramienta(Y,PY), X\= encendedor, P is 2*PX + PY.
 composicion(jerarquica(X,Y), P, C) :- herramienta(X, PX), herramienta(Y, PY), P is PX * PY, C is 4. 
 composicion(jerarquica(X,Y), P, C) :- composicion(X, PX, CX), composicion(Y, PY, CY), P is PX * PY, C is 2*(CX+CY). 
 composicion(jerarquica(X,Y), P, C) :- composicion(X, PX, CX), herramienta(Y, PY), P is PX * PY, C is 2*(CX + 1).
 composicion(jerarquica(X,Y), P, C) :- herramienta(X, PX), composicion(Y, PY, CY), P is PX * PY, C is 2*(CY + 1). 
 
+%Ej2 Configuracion
 %% configuracion(+M, ?Conf, ?P, ?C)
 configuracion([X], X, P, C) :- herramienta(X, P), C is 1.
 configuracion(M, Conf, P, C) :- esPermutacion(M, L), mochilaSegunConf(Conf, L), composicion(Conf, P, C). 
@@ -28,13 +29,15 @@ esPermutacion([X], [X]).
 esPermutacion([T|H], X) :- ground([T|H]), var(X), H \= [], esPermutacion(H, H1), append(L1, L2, H1), append(L1, [T], X1), append(X1, L2, X).
 esPermutacion(X, [T|H]) :- ground([T|H]), H \= [], esPermutacion(H, H1), append(L1, L2, H1), append(L1, [T], X1), append(X1, L2, X).
 
+%Ej3 masPoderosa
 % masPoderosa(+M1,+M2)
 masPoderosa(M1, M2) :- configuracion(M1, _, P1, _), forall(configuracion(M2, _, P2, _), P1 > P2), !.
-% USAMOS CUT PARA QUE DEVUELVA UN SOLO VALOR ??
 
+%Ej4 mejor
 % mejor(+M1,+M2)
 mejor(M1, M2) :- forall(configuracion(M2, _, P2, C2), (configuracion(M1, _, P1, C1), P1 >= P2, C1 < C2)), !.
 
+%Ej5 usar
 % usar(+M1,+Ps,?Cs,?M2)
 usar(M1, Ps, Cs, M2) :- length(Ps, N), length(Cs, N), todosMayores(Ps, Cs), preservaElementos(Cs, M1, M2).
 
