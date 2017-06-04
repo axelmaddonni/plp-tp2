@@ -17,8 +17,8 @@ configuracion(M, Conf, P, C) :- esPermutacion(M, L), mochilaSegunConf(Conf, L), 
 
 %%mochilaSegunConf(?Conf, ?L)
 %%PRE: alguna de las dos variables debe estar instanciada
-mochilaSegunConf(X, [X]) :- herramienta(X, PX).
-mochilaSegunConf(binaria(X,Y), L) :- herramienta(X,PX), herramienta(Y,PY), esPermutacion(L, [X,Y]).
+mochilaSegunConf(X, [X]) :- herramienta(X, _).
+mochilaSegunConf(binaria(X,Y), L) :- herramienta(X,_), herramienta(Y,_), esPermutacion(L, [X,Y]).
 mochilaSegunConf(jerarquica(X, Y), L) :- nonvar(L), L \= [], esPermutacion(L, L0), mochilaSegunConf(X, L1), append(L1, L2, L0), mochilaSegunConf(Y, L2).
 mochilaSegunConf(jerarquica(X, Y), L) :- ground(jerarquica(X, Y)), var(L), mochilaSegunConf(X, L1), mochilaSegunConf(Y, L2), append(L1, L2, L0), esPermutacion(L, L0).
 
@@ -29,11 +29,11 @@ esPermutacion([T|H], X) :- ground([T|H]), var(X), H \= [], esPermutacion(H, H1),
 esPermutacion(X, [T|H]) :- ground([T|H]), H \= [], esPermutacion(H, H1), append(L1, L2, H1), append(L1, [T], X1), append(X1, L2, X).
 
 % masPoderosa(+M1,+M2)
-masPoderosa(M1, M2) :- configuracion(M1, Conf1, P1, C1), forall(configuracion(M2, Conf2, P2, C2), P1 > P2), !.
+masPoderosa(M1, M2) :- configuracion(M1, _, P1, _), forall(configuracion(M2, _, P2, _), P1 > P2), !.
 % USAMOS CUT PARA QUE DEVUELVA UN SOLO VALOR ??
 
 % mejor(+M1,+M2)
-mejor(M1, M2) :- forall(configuracion(M2, Conf2, P2, C2), (configuracion(M, Conf, P, C), P >= P2, C < C2)), !.
+mejor(M1, M2) :- forall(configuracion(M2, _, P2, C2), (configuracion(M1, _, P1, C1), P1 >= P2, C1 < C2)), !.
 
 % usar(+M1,+Ps,?Cs,?M2)
 usar(M1, Ps, Cs, M2) :- length(Ps, N), length(Cs, N), todosMayores(Ps, Cs), preservaElementos(Cs, M1, M2).
@@ -52,7 +52,7 @@ confAMochila(binaria(X,Y), M) :- herramienta(X,_), herramienta(Y,_), esPermutaci
 confAMochila(jerarquica(X,Y), M) :- confAMochila(X, M1), confAMochila(Y,M2), append(M1, M2, Maux), esPermutacion(Maux, M).
 
 % EJ6. Comprar
-generateLista([X],1) :- herramienta(X,P).
-generateLista([X|Xs],I) :- herramienta(X,P), I > 1, J is I-1, generateLista(Xs,J).
-mejorConfiguracion(M,P) :- configuracion(M,Conf2,P,_), forall(configuracion(M,Conf1,Paux,_), Paux =< P),!.
+generateLista([X],1) :- herramienta(X,_).
+generateLista([X|Xs],I) :- herramienta(X,_), I > 1, J is I-1, generateLista(Xs,J).
+mejorConfiguracion(M,P) :- configuracion(M,_,P,_), forall(configuracion(M,_,Paux,_), Paux =< P),!.
 comprar(P,C,M) :- between(1,C,I), generateLista(M,I), mejorConfiguracion(M, Potencial), Potencial >= P.
