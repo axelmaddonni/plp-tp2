@@ -35,7 +35,7 @@ masPoderosa(M1, M2) :- configuracion(M1, _, P1, _), forall(configuracion(M2, _, 
 
 %Ej4 mejor
 % mejor(+M1,+M2)
-mejor(M1, M2) :- forall(configuracion(M2, _, P2, C2), (configuracion(M1, _, P1, C1), P1 >= P2, C1 < C2)), !.
+mejor(M1, M2) :- forall(configuracion(M2, _, P2, C2), (configuracion(M1, _, P1, C1), P1 >= P2, C1 < C2)).
 
 %Ej5 usar
 % usar(+M1,+Ps,?Cs,?M2)

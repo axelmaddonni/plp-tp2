@@ -8,6 +8,6 @@ test(jerarquica) :-
         L == [[6000, 26]].
 
 test(mejor) :-
-        mejor(binaria(rayo,rayo),volatilizador).
+        mejor([volatilizador,volatilizador],[encendedor,encendedor,encendedor])
 
 :- end_tests(lists).
