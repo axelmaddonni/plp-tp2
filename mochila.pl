@@ -15,15 +15,18 @@ composicion(jerarquica(X,Y), P, C) :- herramienta(X, PX), composicion(Y, PY, CY)
 configuracion([X], X, P, C) :- herramienta(X, P), C is 1.
 configuracion(M, Conf, P, C) :- esPermutacion(M, L), mochilaSegunConf(Conf, L), composicion(Conf, P, C). 
 
-%%mochilaSegunConf(?Conf, +L)
+%%mochilaSegunConf(?Conf, ?L)
+%%PRE: alguna de las dos variables debe estar instanciada
 mochilaSegunConf(X, [X]) :- herramienta(X, PX).
 mochilaSegunConf(binaria(X,Y), L) :- herramienta(X,PX), herramienta(Y,PY), esPermutacion(L, [X,Y]).
-mochilaSegunConf(jerarquica(X, Y), L) :- L \= [], esPermutacion(L, L0), mochilaSegunConf(X, L1), append(L1, L2, L0), mochilaSegunConf(Y, L2).
+mochilaSegunConf(jerarquica(X, Y), L) :- nonvar(L), L \= [], esPermutacion(L, L0), mochilaSegunConf(X, L1), append(L1, L2, L0), mochilaSegunConf(Y, L2).
+mochilaSegunConf(jerarquica(X, Y), L) :- ground(jerarquica(X, Y)), var(L), mochilaSegunConf(X, L1), mochilaSegunConf(Y, L2), append(L1, L2, L0), esPermutacion(L, L0).
 
-%% esPermutacion(+L1, ?L2)
+%% esPermutacion(?L1, ?L2)
 esPermutacion([], []).
 esPermutacion([X], [X]).
-esPermutacion([T|H], X) :- H \= [], esPermutacion(H, H1), append(L1, L2, H1), append(L1, [T], X1), append(X1, L2, X).
+esPermutacion([T|H], X) :- ground([T|H]), var(X), H \= [], esPermutacion(H, H1), append(L1, L2, H1), append(L1, [T], X1), append(X1, L2, X).
+esPermutacion(X, [T|H]) :- ground([T|H]), H \= [], esPermutacion(H, H1), append(L1, L2, H1), append(L1, [T], X1), append(X1, L2, X).
 
 % masPoderosa(+M1,+M2)
 masPoderosa(M1, M2) :- configuracion(M1, Conf1, P1, C1), forall(configuracion(M2, Conf2, P2, C2), P1 > P2), !.
