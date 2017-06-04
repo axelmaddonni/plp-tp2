@@ -3,11 +3,11 @@
 :- begin_tests(lists).
 :- use_module(library(lists)).
 
-test(jerarquica) :-
+test(composicion) :-
         findall([P, C], composicion(jerarquica(jerarquica(binaria(rayo,volatilizador), rayo), rayo),P,C), L),
         L == [[6000, 26]].
 
 test(mejor) :-
-        mejor([volatilizador,volatilizador],[encendedor,encendedor,encendedor])
+        mejor([volatilizador,volatilizador],[rayo,rayo,rayo]).
 
 :- end_tests(lists).

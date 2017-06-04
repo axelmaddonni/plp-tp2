@@ -41,9 +41,9 @@ mejor(M1, M2) :- forall(configuracion(M2, _, P2, C2), (configuracion(M1, _, P1, 
 % usar(+M1,+Ps,?Cs,?M2)
 usar(M1, Ps, Cs, M2) :- length(Ps, N), length(Cs, N), todosMayores(Ps, Cs), preservaElementos(Cs, M1, M2).
 
-todosMayores(Ps,Cs) :- length(Ps,N), M is N-1, forall(entre0yN(I,M), mayor(Ps,Cs,I) ). 
+todosMayores(Ps,Cs) :- length(Ps,N), M is N-1, forall(entre0yN(I,M), mayorPotencial(Ps,Cs,I) ). 
 entre0yN(I,N) :- between(0,N,I).
-mayor(Ps,Cs,I) :- nth0(I,Ps,X), nth0(I,Cs,Y), X > Y.
+mayorPotencial(Ps,Cs,I) :- nth0(I,Ps,X), nth0(I,Cs,Y), composicion(Y,P,_), P > X.
 
 % preservaElementos(?Cs, +M1, ?M2)
 preservaElementos(Cs,M1,M2) :- mochilas(Cs, Ms), append(Ms, M3), append(M2, M3, Maux), esPermutacion(Maux, M1).
