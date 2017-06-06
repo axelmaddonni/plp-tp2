@@ -7,7 +7,8 @@ test("ej1-1") :-
         findall([P, C], composicion(jerarquica(jerarquica(binaria(rayo,volatilizador), rayo), rayo),P,C), L),
         L == [[6000, 26]].
 
-%% test("ej2") :- .
+test("ej2") :-
+        findall([Conf, P, C], configuracion([rayo,volatilizador,rayo],Conf,P,C), L), member([jerarquica(volatilizador, binaria(rayo, rayo)), 1200, 12], L), member([jerarquica(volatilizador, jerarquica(rayo, rayo)), 4000, 10], L), !.
 
 test("ej3-1") :-
         masPoderosa([volatilizador, volatilizador], [rayo, rayo]).
