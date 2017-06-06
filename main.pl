@@ -1,3 +1,8 @@
+%% Tests para los ejercicios
+%% Para correrlos: 
+%% [main].
+%% run_tests.
+
 :-[mochila].
 
 :- begin_tests(lists).
