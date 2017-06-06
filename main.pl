@@ -22,7 +22,8 @@ test("ej3-3") :-
 test("ej4-1") :-
         mejor([volatilizador,volatilizador],[rayo,rayo,rayo]).
 
-%% test("ej5") :- .
+test("ej5") :-
+        findall(C, usar([rayo,rayo,volatilizador,rayo,encendedor],[30,80],C,[encendedor]), L), member([binaria(rayo, rayo), jerarquica(rayo, volatilizador)], L), member([binaria(rayo, rayo), binaria(volatilizador, rayo)], L), member([jerarquica(rayo, rayo), jerarquica(rayo, volatilizador)], L), !.
 
 test("ej6-1") :-
         findall(M, comprar(100,2,M), L), member([rayo, rayo], L), !.
