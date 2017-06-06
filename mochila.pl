@@ -9,7 +9,7 @@ composicion(binaria(X,Y),P,5):- herramienta(X, PX), herramienta(Y,PY), X\= encen
 composicion(jerarquica(X,Y), P, C) :- herramienta(X, PX), herramienta(Y, PY), P is PX * PY, C is 4. 
 composicion(jerarquica(X,Y), P, C) :- herramienta(X, PX), composicion(Y, PY, CY), P is PX * PY, C is 2*(CY + 1). 
 composicion(jerarquica(X,Y), P, C) :- composicion(X, PX, CX), herramienta(Y, PY), P is PX * PY, C is 2*(CX + 1).
-composicion(jerarquica(X,Y), P, C) :- composicion(X, PX, CX), composicion(Y, PY, CY), P is PX * PY, C is 2*(CX+CY). 
+composicion(jerarquica(X,Y), P, C) :- composicion(X, PX, CX), composicion(Y, PY, CY), P is PX * PY, C is 2*(CX+CY).
 
 % Ej2:  configuracion
 % configuracion(+Mochila, ?Configuracion, ?Potencial, ?Costo)
@@ -20,8 +20,13 @@ configuracion(M, Conf, P, C) :- esPermutacion(M, L), mochilaSegunConf(Conf, L), 
 % PRE: alguna de las dos variables debe estar instanciada
 mochilaSegunConf(X, [X]) :- herramienta(X, _).
 mochilaSegunConf(binaria(X,Y), L) :- herramienta(X,_), herramienta(Y,_), esPermutacion(L, [X,Y]).
-mochilaSegunConf(jerarquica(X, Y), L) :- nonvar(L), L \= [], esPermutacion(L, L0), mochilaSegunConf(X, L1), append(L1, L2, L0), mochilaSegunConf(Y, L2).
-mochilaSegunConf(jerarquica(X, Y), L) :- ground(jerarquica(X, Y)), var(L), mochilaSegunConf(X, L1), mochilaSegunConf(Y, L2), append(L1, L2, L0), esPermutacion(L, L0).
+mochilaSegunConf(jerarquica(X, Y), L) :- nonvar(L), particion(L,L0, L1), L0\= [], L1\=[], mochilaSegunConf(X, L0), mochilaSegunConf(Y, L1).
+mochilaSegunConf(jerarquica(X, Y), L) :- ground(jerarquica(X, Y)), var(L), mochilaSegunConf(X, L1), mochilaSegunConf(Y, L2), append(L1, L2, L), !.
+
+% particion(+L, -L1, -L2)
+particion([],[],[]).
+particion([X|XS],[X|L],R):-particion(XS,L,R).
+particion([X|XS],L,[X|R]):-particion(XS,L,R).
 
 % esPermutacion(?L1, ?L2)
 esPermutacion([], []).
@@ -39,20 +44,24 @@ mejor(M1, M2) :- forall(configuracion(M2, _, P2, C2), (configuracion(M1, _, P1, 
 
 % Ej5: usar
 % usar(+M1,+Ps,?Cs,?M2)
-usar(M1, Ps, Cs, M2) :- length(Ps, N), length(Cs, N), todosMayores(Ps, Cs), preservaElementos(Cs, M1, M2).
+usar(M1, Ps, Cs, M2) :- length(Ps, N), preservaElementos(Cs, N, M1, M2), todosMayores(Ps, Cs).
 
 todosMayores(Ps,Cs) :- length(Ps,N), M is N-1, forall(entre0yN(I,M), mayorPotencial(Ps,Cs,I) ). 
 entre0yN(I,N) :- between(0,N,I).
-mayorPotencial(Ps,Cs,I) :- nth0(I,Ps,X), nth0(I,Cs,Y), composicion(Y,P,_), P > X.
+mayorPotencial(Ps,Cs,I) :- nth0(I,Ps,X), nth0(I,Cs,Y), composicion(Y,P,_), P >= X.
 
 % preservaElementos(?Cs, +M1, ?M2)
-preservaElementos(Cs,M1,M2) :- mochilas(Cs, Ms), append(Ms, M3), append(M2, M3, Maux), esPermutacion(Maux, M1).
-mochilas(Cs, Ms) :- maplist(confAMochila,Cs,Ms).
+preservaElementos(Cs, N, M1,M2) :- nonvar(Cs), length(Cs, N), mochilas(Cs, Ms), append(Ms, M3), esPermutacion(Maux, M1), append(M2, M3, Maux), !.
+preservaElementos(Cs, N, M1,M2) :- var(Cs), var(M2), length(Cs, N), particion(M1, L, M2), particionN(L, PL, N), mochilas(Cs, PL).
+preservaElementos(Cs, N, M1,M2) :- var(Cs), nonvar(M2), length(Cs, N), esPermutacion(M2, P2), particion(M1, L, P2), particionN(L, PL, N), mochilas(Cs, PL).
 
-% confAMochila(+Conf, -M)
-confAMochila(X, [X]) :- herramienta(X,_).
-confAMochila(binaria(X,Y), M) :- herramienta(X,_), herramienta(Y,_), esPermutacion([X,Y], M).
-confAMochila(jerarquica(X,Y), M) :- confAMochila(X, M1), confAMochila(Y,M2), append(M1, M2, Maux), esPermutacion(Maux, M).
+% mochilas(?Cs, ?Ms)
+% PRE: Una de las dos viene definida (Cs o Ms)
+mochilas(Cs, Ms) :- maplist(mochilaSegunConf,Cs,Ms).
+
+% particionN(+L, -D, +N)
+particionN(L, [L], 1).
+particionN(L, D, N) :- N > 1, particion(L, L1, L2), M is N-1, particionN(L2, D2, M), append([L1], D2, D).
 
 % Ej6: comprar
 % comprar(+P,+C,?M)
